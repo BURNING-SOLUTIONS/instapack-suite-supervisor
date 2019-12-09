@@ -1,0 +1,17 @@
+api_platform:
+  collection:
+    pagination:
+      enabled: true
+      #partial: true
+      #client_partial: true # Disabled by default
+      #partial_parameter_name: 'partial' # Default value
+      client_items_per_page: true # Disabled by default, allow the client obtain specific items total per page
+      items_per_page: 30 # default items per page, can be changed besides param 'itemsPerPage', but exist maximum items per page (100)
+      maximum_items_per_page: 100
+      items_per_page_parameter_name: perPage # Default value
+  mapping:
+    paths: ['%kernel.project_dir%/src/Entity']
+  patch_formats:
+    json: ['application/merge-patch+json']
+  swagger:
+    versions: [3]

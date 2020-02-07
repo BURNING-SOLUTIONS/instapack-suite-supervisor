@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping\JoinTable;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -37,6 +38,7 @@ class Group
     /**
      * @ORM\Column(type="string", length=255, nullable=false, unique=true)
      * @Groups({"Groups_Roles"})
+     * @ApiFilter(SearchFilter::class, strategy="partial")
      * @Assert\NotBlank()
      * @Assert\NotNull()
      */
@@ -49,6 +51,7 @@ class Group
      *      joinColumns={@JoinColumn(name="group_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")}
      *     )
+     * @ApiFilter(SearchFilter::class, strategy="partial")
      * @Assert\NotBlank()
      * @Assert\NotNull()
      */

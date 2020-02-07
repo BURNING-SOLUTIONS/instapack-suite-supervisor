@@ -26,7 +26,7 @@ use App\Controller\PasswordResetController;
  * @ApiResource(
  *     collectionOperations={
  *         "get"={
- *             "security"="is_granted('ROLE_SUPER_ADMIN')",
+ *             "security"="is_granted('ROLE_SUPER_ADMIN','ROLE_APPLICATION_ADMIN')",
  *          },
  *         "post"={
  *             "security"="is_granted('ROLE_SUPER_ADMIN')",
@@ -40,7 +40,7 @@ use App\Controller\PasswordResetController;
  *         "patch",
  *         "delete",
  *         "post_reset_password"={
- *              "security"="is_granted('ROLE_SUPER_ADMIN')",
+ *              "security"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY')",
  *              "method"="POST",
  *              "path"="/users/password/{operation}",
  *              "requirements"={"operation"="reset|request"},
@@ -156,9 +156,19 @@ class User implements UserInterface
                 array_push($finalRoles, $role->getName());
             }
         }
+        $unifiedRoles = array_unique(array_merge($roles, $finalRoles));
+        $result = array();
+        foreach ($unifiedRoles as $key => $name) {
+            array_push($result, $name);
+        }
         // guarantee every user at least has ROLE_USER
         //if (!$roles) $roles[] = 'ROLE_GUEST';
-        return (array_unique(array_merge($roles, $finalRoles))) ?: ['ROLE_GUEST'];
+        return $result ?: ['ROLE_GUEST'];
+    }
+
+    public function getSingelRoles()
+    {
+        return $this->roles;
     }
 
 

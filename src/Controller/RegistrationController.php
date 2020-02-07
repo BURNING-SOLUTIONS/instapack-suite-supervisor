@@ -3,16 +3,20 @@
 namespace App\Controller;
 
 use App\Entity\Role;
+use App\Exception\ValidatorParamNotFoundException;
+use App\Service\EncryptService;
+use App\Utils\RequestContextParser;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\UserService;
 use App\Entity\User;
+use Symfony\Component\Serializer\Encoder\JsonDecode;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 
 class RegistrationController
 {
     private $userService;
     private $request;
-    private $normalizer;
 
     /**
      * RegistrationController constructor.
@@ -41,9 +45,18 @@ class RegistrationController
         $resource = null;
         $message = 'Resource create succesfully';
         $status = Response::HTTP_OK;
-        $arrRolesName = $this->userService->denormalizeRoles($data->getRoles());
+        $parser = new RequestContextParser($this->request);
+        $repeat_password = $parser->getRequestValue('repeat_password');
+
+        if (!$repeat_password) {
+            throw new ValidatorParamNotFoundException('repeat_password');
+        }
+        if (!$data->getEmail()) {
+            throw new ValidatorParamNotFoundException('email');
+        }
+        $arrRolesName = $this->userService->denormalizeRoles($data->getSingelRoles());
         $data->setRoles($arrRolesName);
-        $this->userService->registerUser($data);
+        $this->userService->registerUser($data, $repeat_password);
         #try {
         #$this->userService->registerUser($data);
         #} catch (ValidationException $exception) {

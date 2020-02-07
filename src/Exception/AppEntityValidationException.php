@@ -2,7 +2,6 @@
 // api/src/Exception/ProductNotFoundException.php
 
 namespace App\Exception;
-;
 
 use ApiPlatform\Core\Validator\Exception\ValidationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;

@@ -63,16 +63,24 @@ class UserService
      * @param User $user
      * @return array
      */
-    public function registerUser(User $user): void
+    public function registerUser(User $user, string $repeat_password): void
     {
         $errors = $this->validator->validate($user);
+        #No hace falta este codigo comentareado porque el framework solo valida la entidad..
         /*
         if (count($errors) > 0) {
             throw new ValidationException($errors[0]->getMessage());
         } else ...
         */
         if (!count($errors) > 0) {
-            $encodedPassword = $this->encoder->encodePassword($user, $user->getPassword());
+            $password = $user->getPassword();
+            if (!$repeat_password) {
+                throw new ValidatorParamNotFoundException('repeat_password');
+            }
+            if ($password !== $repeat_password) {
+                throw new AppEntityValidationException('Password and repeat password doest not match');
+            }
+            $encodedPassword = $this->encoder->encodePassword($user, $password);
             $this->userRepository->persistUser($user, $encodedPassword);
         };
     }

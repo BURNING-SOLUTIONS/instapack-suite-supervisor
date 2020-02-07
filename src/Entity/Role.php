@@ -30,7 +30,7 @@ class Role
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @Groups({"Role_Apps"})
+     * @Groups({"Role_Apps","Permission_Relations"})
      * @ApiFilter(SearchFilter::class, strategy="exact")
      * @ORM\Column(type="integer")
      */
@@ -40,7 +40,7 @@ class Role
      * @ORM\Column(type="string", length=255, nullable=false, unique=true)
      * @ApiFilter(SearchFilter::class, strategy="partial")
      * @Assert\NotNull()
-     * @Groups({"Role_Apps","Groups_Roles"})
+     * @Groups({"Role_Apps","Groups_Roles","Permission_Relations"})
      * @Assert\NotBlank()
      */
     private $name;
@@ -72,11 +72,17 @@ class Role
      */
     private $groups;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Permission", mappedBy="role")
+     */
+    private $permissions;
+
 
     public function __construct()
     {
         $this->applications = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->permissions = new ArrayCollection();
 
     }
 
@@ -172,6 +178,37 @@ class Role
         if ($this->groups->contains($group)) {
             $this->groups->removeElement($group);
             $group->removeRole($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Permission[]
+     */
+    public function getPermissions(): Collection
+    {
+        return $this->permissions;
+    }
+
+    public function addPermission(Permission $permission): self
+    {
+        if (!$this->permissions->contains($permission)) {
+            $this->permissions[] = $permission;
+            $permission->setRole($this);
+        }
+
+        return $this;
+    }
+
+    public function removePermission(Permission $permission): self
+    {
+        if ($this->permissions->contains($permission)) {
+            $this->permissions->removeElement($permission);
+            // set the owning side to null (unless already changed)
+            if ($permission->getRole() === $this) {
+                $permission->setRole(null);
+            }
         }
 
         return $this;

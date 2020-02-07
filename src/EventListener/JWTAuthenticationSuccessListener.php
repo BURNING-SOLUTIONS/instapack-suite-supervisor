@@ -33,7 +33,7 @@ class JWTAuthenticationSuccessListener
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
         $request = $this->requestStack->getCurrentRequest();
-        $clientId = $request->query->get('CLIENT_ID');
+        $clientId = $request->query->get('client_id');
         $data = $event->getData();
         $user = $event->getUser();
         $data['email'] = $user->getUsername();

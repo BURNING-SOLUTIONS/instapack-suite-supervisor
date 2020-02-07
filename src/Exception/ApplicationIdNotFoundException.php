@@ -2,7 +2,7 @@
 // api/src/Exception/ProductNotFoundException.php
 
 namespace App\Exception;
-;
+
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Throwable;
 

@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Exception\AppEntityValidationException;
+use App\Exception\ValidatorParamNotFoundException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Application;
@@ -29,6 +31,21 @@ class ApplicationService
         $this->encoder = $encoder;
         $this->validator = $validator;
         $this->applicationRepository = $this->dbManager->getRepository(Application::class);
+    }
+
+    /**
+     * @param Application $app
+     * @throws \Exception
+     */
+    public function saveApplication(Application $app): void
+    {
+        $now = new \DateTime();
+        $app->setClientId($now->getTimestamp() . '.' . 'apps.instapackaccounts.com');
+        $errors = $this->validator->validate($app);
+        if (!count($errors) > 0) {
+            $this->applicationRepository->persistApplication($app);
+        };
+
     }
 
     /**

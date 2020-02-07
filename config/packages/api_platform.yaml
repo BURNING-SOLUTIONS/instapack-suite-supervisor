@@ -1,10 +1,17 @@
 api_platform:
   exception_to_status:
     Symfony\Component\Serializer\Exception\ExceptionInterface: 400
+    ApiPlatform\Core\Exception\InvalidArgumentException: !php/const Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+    ApiPlatform\Core\Exception\FilterValidationException: 400
+    Doctrine\ORM\OptimisticLockException: 409
+
+    # Custom mapping
+    App\Exception\ObjectNotFoundException: 404
     App\Exception\ApplicationIdNotFoundException: 401
     App\Exception\AppUnauthorizedHttpException: 401
     App\Exception\AppEntityValidationException: 400
     App\Exception\ValidatorParamNotFoundException: 404
+
   #formats:
   #jsonld:   ['application/ld+json']
   #jsonapi:  ['application/vnd.api+json']

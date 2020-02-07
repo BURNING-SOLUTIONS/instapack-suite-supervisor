@@ -46,6 +46,15 @@ class RedisCacheService
 
     /**
      * @param $key
+     * @return bool
+     */
+    public function exist($key): bool
+    {
+        return $this->client->exists($key);
+    }
+
+    /**
+     * @param $key
      * @param $value
      * @param int $ttl
      * @return object

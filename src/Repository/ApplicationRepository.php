@@ -38,6 +38,13 @@ class ApplicationRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
+
+    public function persistApplication(Application $app): void
+    {
+        $this->_em->persist($app);
+        $this->_em->flush();
+    }
+
     /*
     public function findOneBySomeField($value): ?Application
     {

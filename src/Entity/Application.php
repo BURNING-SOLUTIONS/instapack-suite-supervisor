@@ -15,12 +15,25 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Controller\ApplicationController;
 
 #attributes={"security"="is_granted('ROLE_ADMIN')"}
 #attributes={"security"="is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"}
 
 /**
- * @ApiResource(attributes={"security"="is_granted('ROLE_SUPER_ADMIN')"})
+ * @ApiResource(
+ *     attributes={"security"="is_granted('ROLE_SUPER_ADMIN')"},
+ *     collectionOperations={
+ *         "get"={
+ *             "security"="is_granted('ROLE_SUPER_ADMIN')",
+ *          },
+ *         "post"={
+ *             "security"="is_granted('ROLE_SUPER_ADMIN')",
+ *             "method"="POST",
+ *             "controller"=ApplicationController::class
+ *         }
+ *      }
+ *     )
  * @ApiFilter(SearchFilter::class, properties={"id": "exact", "description": "partial", "clientId": "partial", "redirectUri": "partial"})
  * @ApiFilter(OrderFilter::class, properties={"id": "ASC", "name": "ASC","description": "ASC", "code": "ASC", "redirectUri": "ASC", "clientId": "ASC"}, arguments={"orderParameterName"="order"})
  * @ApiFilter(BooleanFilter::class)
@@ -34,7 +47,7 @@ class Application
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @Groups({"Role_Apps"})
+     * @Groups({"Role_Apps","Permission_Relations"})
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -43,7 +56,7 @@ class Application
      * @ORM\Column(type="string", length=255, nullable=false, unique=true)
      * @Assert\NotNull()
      * @ApiFilter(SearchFilter::class, strategy="partial")
-     * @Groups({"Role_Apps"})
+     * @Groups({"Role_Apps","Permission_Relations"})
      * @Assert\NotBlank()
      */
     private $name;
@@ -88,9 +101,22 @@ class Application
      */
     private $logo;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Permission", mappedBy="application")
+     */
+    private $permissions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Oauth", mappedBy="application", orphanRemoval=true)
+     */
+    private $oauths;
+
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        $this->permissions = new ArrayCollection();
+        $this->oauths = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -202,4 +228,67 @@ class Application
 
         return $this;
     }
+
+    /**
+     * @return Collection|Permission[]
+     */
+    public function getPermissions(): Collection
+    {
+        return $this->permissions;
+    }
+
+    public function addPermission(Permission $permission): self
+    {
+        if (!$this->permissions->contains($permission)) {
+            $this->permissions[] = $permission;
+            $permission->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removePermission(Permission $permission): self
+    {
+        if ($this->permissions->contains($permission)) {
+            $this->permissions->removeElement($permission);
+            // set the owning side to null (unless already changed)
+            if ($permission->getApplication() === $this) {
+                $permission->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Oauth[]
+     */
+    public function getOauths(): Collection
+    {
+        return $this->oauths;
+    }
+
+    public function addOauth(Oauth $oauth): self
+    {
+        if (!$this->oauths->contains($oauth)) {
+            $this->oauths[] = $oauth;
+            $oauth->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOauth(Oauth $oauth): self
+    {
+        if ($this->oauths->contains($oauth)) {
+            $this->oauths->removeElement($oauth);
+            // set the owning side to null (unless already changed)
+            if ($oauth->getApplication() === $this) {
+                $oauth->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

@@ -69,7 +69,10 @@ class PasswordResetController
                 throw new ValidatorParamNotFoundException('email');
             }
 
-            $template = '<h3>Solicitud cambio de contraseña:</h3> <p>Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- <a href="http://google.com?tkd_reset=' . $tokenParam . '">recuperar clave</a> (tenga en cuenta que este enlace será válido solo por 8 horas.)</p>';
+            $template =
+                '<h3>Solicitud cambio de contraseña:</h3> 
+                    <p>Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- <a href="http://localhost:3000/#/password-recovery?tkd_reset=' . $tokenParam . '">recuperar clave</a> (tenga en cuenta que este enlace será válido solo por 8 horas.)
+                    </p>';
             $email = (new Email())
                 ->from('comercialm@instapack.es')
                 ->to($data->getEmail())
@@ -80,14 +83,12 @@ class PasswordResetController
             $this->mailerManger->getCurrentEmailSender()->sendEmail($email);
             $message = 'You have a new email in ' . $data->getEmail() . ', please check your email inbox';
         } else {
-            $resetToken = $parser->getRequestValue('tkd_reset');
+            $resetToken = str_replace(' ', '+', $parser->getRequestValue('tkd_reset'));
             $newPassword = $parser->getRequestValue('password');
             if (!$resetToken || !$newPassword) {
                 $lostParam = !$resetToken ? 'tkd_reset' : 'password';
-                // echo $lostParam; exit;
                 throw new ValidatorParamNotFoundException($lostParam);
             }
-
             $decryptedToken = $encrypter->decrypt($resetToken);
             $dataDecoded = get_object_vars($decoder->decode($decryptedToken, 'array'));
             $expiration = new \DateTime($dataDecoded['tokenExpiration']);

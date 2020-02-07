@@ -3,11 +3,11 @@ snc_redis:
     default:
       type: predis
       alias: default
-      dsn: 'redis://AARBOJ9cCNoGCKhl4EBwQLHri1gatWgn4Xn4HwNUbQtzoVxAYxkiYB2i7aufl4MILv1nxBqRZ4L6NNzI0X6cMM@192.168.0.9/1'
+      dsn: 'redis:/%env(REDIS_KEY)%/@%env(REDIS_SERVER)%/1'
     cache:
       type: predis
       alias: cache
-      dsn: 'redis://AARBOJ9cCNoGCKhl4EBwQLHri1gatWgn4Xn4HwNUbQtzoVxAYxkiYB2i7aufl4MILv1nxBqRZ4L6NNzI0X6cMM@192.168.0.9/1'
+      dsn: 'redis://%env(REDIS_KEY)%@%env(REDIS_SERVER)%/1'
       options:
         profile: 2.2
         connection_timeout: 10

@@ -54,6 +54,7 @@ class PasswordResetController
     public function __invoke(User $data): Response
     {
         $message = '';
+        $API_BASE_URL = $_ENV['API_BASE_URL'];
         $encoder = new JsonEncode();
         $decoder = new JsonDecode();
         $encrypter = new EncryptService();
@@ -71,7 +72,7 @@ class PasswordResetController
 
             $template =
                 '<h3>Solicitud cambio de contraseña:</h3> 
-                    <p>Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- <a href="http://localhost:3000/#/password-recovery?tkd_reset=' . $tokenParam . '">recuperar clave</a> (tenga en cuenta que este enlace será válido solo por 8 horas.)
+                    <p>Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- <a href="http://'.$API_BASE_URL.'/#/password-recovery?tkd_reset=' . $tokenParam . '">recuperar clave</a> (tenga en cuenta que este enlace será válido solo por 8 horas.)
                     </p>';
             $email = (new Email())
                 ->from('comercialm@instapack.es')

@@ -64,26 +64,38 @@ class PasswordResetController
         $urlExpiration = $now->add(new \DateInterval('PT8H'));
 
         if ($operation === 'request') {
-            $tokenParam = $encrypter->encrypt($encoder->encode(array('email' => $data->getEmail(), 'tokenExpiration' => $urlExpiration->format('Y-m-d H:i:s')), 'json'));
-
             if (!$data->getEmail()) {
                 throw new ValidatorParamNotFoundException('email');
             }
 
+            try {
+                $this->userService->getUserByParams(array('email' => $data->getEmail()), 'findOneBy');
+            } catch (NotFoundHttpException $exception) {
+                return new JsonResponse(array('message' => $exception->getMessage()));
+            }
+
+            $tokenParam = $encrypter->encrypt($encoder->encode(array('email' => $data->getEmail(), 'tokenExpiration' => $urlExpiration->format('Y-m-d H:i:s')), 'json'));
+
             $template =
                 '<h3>Solicitud cambio de contraseña:</h3> 
                     <p>
-                        Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- <a href="'.$API_BASE_URL.'/#/password-recovery?tkd_reset=' . $tokenParam . '">recuperar clave</a> (tenga en cuenta que este enlace será válido solo por 8 horas.)
+                        Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- 
+                            <a href="' . $API_BASE_URL . '/#/password-recovery?tkd_reset=' . $tokenParam . '">
+                                recuperar clave
+                            </a> 
+                        (tenga en cuenta que este enlace será válido solo por 8 horas.)
                     </p>';
-            $email = (new Email())
-                ->from('comercialm@instapack.es')
-                ->to($data->getEmail())
-                ->subject('Recuperacion de clave de acceso')
-                ->text('Estimado cliente:')
-                ->html($template);
+
+            $email =
+                (new Email())
+                    ->from('hola@instapack.es')
+                    ->to($data->getEmail())
+                    ->subject('Recuperación de clave de acceso')
+                    ->text('Estimado cliente:')
+                    ->html($template);
 
             $this->mailerManger->getCurrentEmailSender()->sendEmail($email);
-            $message = 'You have a new email in ' . $data->getEmail() . ', please check your email inbox';
+            $message = 'Tienes un nuevo ' . $data->getEmail() . ', por favor revise su bandeja de entrada';
         } else {
             $resetToken = str_replace(' ', '+', $parser->getRequestValue('tkd_reset'));
             $newPassword = $parser->getRequestValue('password');

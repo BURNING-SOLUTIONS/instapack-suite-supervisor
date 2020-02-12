@@ -12,7 +12,7 @@ class SymfonyMailerEmailManager implements EmailSenderInterface
 
     public function __construct()
     {
-        $this->mailer = new Mailer(new GmailSmtpTransport('comercialm@instapack.es', 'ICS28028'));
+        $this->mailer = new Mailer(new GmailSmtpTransport('hola@instapack.es', 'ICS28028'));
     }
 
     public function sendEmail($email): void

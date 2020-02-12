@@ -72,7 +72,8 @@ class PasswordResetController
 
             $template =
                 '<h3>Solicitud cambio de contraseña:</h3> 
-                    <p>Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- <a href="http://'.$API_BASE_URL.'/#/password-recovery?tkd_reset=' . $tokenParam . '">recuperar clave</a> (tenga en cuenta que este enlace será válido solo por 8 horas.)
+                    <p>
+                        Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- <a href="'.$API_BASE_URL.'/#/password-recovery?tkd_reset=' . $tokenParam . '">recuperar clave</a> (tenga en cuenta que este enlace será válido solo por 8 horas.)
                     </p>';
             $email = (new Email())
                 ->from('comercialm@instapack.es')

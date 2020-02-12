@@ -65,7 +65,7 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180, unique=true, nullable=false)
      * @Assert\Email()
      * @Assert\NotNull()
      * @Assert\NotBlank()
@@ -82,7 +82,10 @@ class User implements UserInterface
      * @var string The hashed password
      * @Assert\NotNull()
      * @Assert\NotBlank()
-     * @Assert\Regex(pattern="/^\S*(?=\S{6,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/", message="Password should be at least, 6 characters, 1 lowercase letter, 1 uppercase letter and 1 number ")
+     * @Assert\Regex(
+     *     pattern="/^\S*(?=\S{6,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/",
+     *     message="La contraseña debe tener al menos, 6 carácteres, 1 letra minúscula, 1 letra mayúscula y 1 carácter numérico."
+     * )
      * @ORM\Column(type="string", nullable=false)
      */
     private $password;
@@ -103,7 +106,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
-     * @Assert\Regex(pattern="/(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})-?\s?(\d{4})/", message="Please provide a correct phone number")
+     * @Assert\Regex(pattern="/(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})-?\s?(\d{4})/", message="El teléfono proporcionado es inválido.")
      * @ApiFilter(SearchFilter::class, strategy="partial")
      */
     private $phone;

@@ -8,6 +8,7 @@ use App\Exception\ApplicationIdNotFoundException;
 use App\Exception\ValidatorParamNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
+use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -59,30 +60,31 @@ class UserService
         return $user;
     }
 
+    public function isValidUser(User $user): bool
+    {
+        $errors = $this->validator->validate($user);
+        return !count($errors) > 0;
+
+    }
+
     /**
      * @param User $user
      * @return array
      */
-    public function registerUser(User $user, string $repeat_password): void
+    public function registerUser(User $user): void
     {
-        $errors = $this->validator->validate($user);
         #No hace falta este codigo comentareado porque el framework solo valida la entidad..
         /*
         if (count($errors) > 0) {
             throw new ValidationException($errors[0]->getMessage());
         } else ...
         */
-        if (!count($errors) > 0) {
+        if ($this->isValidUser($user)) {
             $password = $user->getPassword();
-            if (!$repeat_password) {
-                throw new ValidatorParamNotFoundException('repeat_password');
-            }
-            if ($password !== $repeat_password) {
-                throw new AppEntityValidationException('Password and repeat password doest not match');
-            }
             $encodedPassword = $this->encoder->encodePassword($user, $password);
             $this->userRepository->persistUser($user, $encodedPassword);
-        };
+        }
+
     }
 
     public function updateUser(User $user): void

@@ -31,24 +31,54 @@ jobs:
           mysql user:  manager # optional, default is
           # MYSQL_PASSWORD - specified superuser password which user is power for created database
           mysql password: manager # optional, default is
-
       #- name: Validate composer.json and composer.lock
       # run: composer validate
       - name: Install dependencies
         run: composer install -n --prefer-dist
-      - name: Delete vendor
+      - name: Delete vendor folder (third party libraries and bundles)
         run: rm -rf ./vendor
-      - name: Delete cache
+      - name: Delete cache (remove cache files)
         run: rm -rf ./var/cache
+      - name: Delete log (remove logs files)
+        run: rm -rf ./var/log
       - name: List output files
         run: ls
+      - name: Copy ssh files to deploy in Azure VM (instapack-suite-cores-supervisor)
+        uses: garygrossgarten/github-action-scp@v0.5.3
+        with:
+          # Path to the local folder you want to copy.
+          local: ./
+          # Path on the remote server to copy to.
+          remote: /home/manager/accounts_api_app
+          # Number of concurrent file transfers.
+          concurrency: 1000 # optional, default is 1
+          # Wether copy of directory should be recursive
+          recursive:  true # optional, default is true
+          # Log status of every file copy
+          verbose: true # optional, default is true
+          # Hostname or IP address of the server.
+          host: ${{ secrets.SSH_SERVER }} # optional, default is localhost
+          # Username for authentication.
+          username: ${{ secrets.SSH_USER }} # optional
+          # Port number of the server.
+          port: 22 # optional, default is 22
+          # File Location or string that contains a private key for either key-based or hostbased user authentication (OpenSSH format)
+          #privateKey: # optional
+          # Password for password-based user authentication.
+          password: ${{ secrets.SSH_PASSWORD}} # optional
+          # For an encrypted private key, this is the passphrase used to decrypt it.
+          #passphrase: # optional
+          # Try keyboard-interactive user authentication if primary user authentication method fails.
+          tryKeyboard: true # optional
       - name:  Deploy to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Prueba Logingit
-        run: echo Login Exitoso
-
+          run: echo Login Exitoso
+      - name: Execute Azure VM release.sh deploy into (instapack-suite-cores-supervisor)
+        run: |
+          az vm run-command invoke -g instapack_deploy -n instapack-suite-core-supervisor  --command-id RunShellScript --scripts "cd /home/manager/accounts_api_app && sudo ./release.sh"
       # Azure logout
       - name: logout
         run: |

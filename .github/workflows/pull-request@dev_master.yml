@@ -30,4 +30,4 @@ jobs:
           # Pull request milestone
           #pr_milestone: # optional
           # GitHub token secret
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.CI_TOKEN }}

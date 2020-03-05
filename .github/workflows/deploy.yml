@@ -75,7 +75,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Prueba Logingit
-          run: echo Login Exitoso
+        run: echo Login Exitoso
       - name: Execute Azure VM release.sh deploy into (instapack-suite-cores-supervisor)
         run: |
           az vm run-command invoke -g instapack_deploy -n instapack-suite-core-supervisor  --command-id RunShellScript --scripts "cd /home/manager/accounts_api_app && sudo ./release.sh"

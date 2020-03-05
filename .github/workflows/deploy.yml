@@ -2,54 +2,74 @@ name: PHP Composer
 
 on:
   push:
-     branches: 
-      - dev
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup MySQL
-      uses: mirromutth/mysql-action@v1.1
-      with:
-        # The port of host
-        host port: 3307 # optional, default is 3306
-        # The port of container
-        container port: 3306  # optional, default is 3306
-        # --character-set-server - The character set of MySQL server
-        character set server: utf8mb4 # optional, default is utf8mb4
-        # --collation-server - The character collation of MySQL server
-        collation server: utf8mb4_general_ci # optional, default is utf8mb4_general_ci
-        # Version of MySQL to use
-        mysql version: latest # optional, default is latest
-        # MYSQL_ROOT_PASSWORD - root superuser password
-        mysql root password: root # optional, default is 
-        # MYSQL_DATABASE - name for the default database that is created
-        mysql database: flotics # optional, default is 
-        # MYSQL_USER - create the specified user with superuser power for created database
-        mysql user: root # optional, default is 
-        # MYSQL_PASSWORD - specified superuser password which user is power for created database
-        mysql password: "" # optional, default is 
+      - uses: actions/checkout@v2
+      - name: Setup MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          # The port of host
+          host port: 3307 # optional, default is 3306
+          # The port of container
+          container port: 3306  # optional, default is 3306
+          # --character-set-server - The character set of MySQL server
+          character set server: utf8mb4 # optional, default is utf8mb4
+          # --collation-server - The character collation of MySQL server
+          collation server: utf8mb4_general_ci # optional, default is utf8mb4_general_ci
+          # Version of MySQL to use
+          mysql version: latest # optional, default is latest
+          # MYSQL_ROOT_PASSWORD - root superuser password
+          mysql root password: root #optional, default is
+          # MYSQL_DATABASE - name for the default database that is created
+          mysql database: flotics # optional, default is
+          # MYSQL_USER - create the specified user with superuser power for created database
+          mysql user:  manager # optional, default is
+          # MYSQL_PASSWORD - specified superuser password which user is power for created database
+          mysql password: manager # optional, default is
 
-    #- name: Validate composer.json and composer.lock
-     # run: composer validate
+      #- name: Validate composer.json and composer.lock
+      # run: composer validate
 
-    - name: Install dependencies
-      run: composer install -n --prefer-dist
-    #- name: Prueba
-     # run: echo probando mi primer Actions
-    - name:  Deploy to Azure 
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Prueba Logingit
-      run: echo Login Exitoso  
-      
-     # Azure logout 
-    - name: logout
-      run: |
-        az logout  
+      - name: Install dependencies
+        run: composer install -n --prefer-dist
+
+      #- name:  GitHub Pull Request Action
+      #    uses: repo-sync/pull-request@v2.0.1
+      #    with:
+            # Branch name to pull from, default is triggered branch
+      #      source_branch: dev # optional
+            # Branch name to sync to in this repo, default is master
+      #      destination_branch:  master # optional, default is master
+            # Pull request title
+      #      pr_title: nuevo pull request # optional
+            # Pull request body
+            #pr_body: nuevo pulll request # optional
+            # Pull request reviewers, comma-separated list (no spaces)
+            #pr_reviewer: # optional
+            # Pull request assignees, comma-separated list (no spaces)
+            #pr_assignee: # optional
+            # Pull request labels, comma-separated list (no spaces)
+            #pr_label: # optional
+            # Pull request milestone
+            #pr_milestone: # optional
+            # GitHub token secret
+       #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name:  Deploy to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Prueba Logingit
+        run: echo Login Exitoso
+
+      # Azure logout
+      - name: logout
+        run: |
+          az logout
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 

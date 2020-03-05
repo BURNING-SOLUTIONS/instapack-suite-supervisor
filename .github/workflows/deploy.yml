@@ -24,13 +24,13 @@ jobs:
         # Version of MySQL to use
         mysql version: latest # optional, default is latest
         # MYSQL_ROOT_PASSWORD - root superuser password
-        mysql root password:   # optional, default is
+        mysql root password: root #optional, default is
         # MYSQL_DATABASE - name for the default database that is created
         mysql database: flotics # optional, default is 
         # MYSQL_USER - create the specified user with superuser power for created database
-        # mysql user:  # optional, default is 
+        mysql user:  manager # optional, default is
         # MYSQL_PASSWORD - specified superuser password which user is power for created database
-        # mysql password:  # optional, default is 
+        mysql password: manager # optional, default is
 
     #- name: Validate composer.json and composer.lock
      # run: composer validate

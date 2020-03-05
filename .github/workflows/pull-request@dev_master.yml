@@ -11,23 +11,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name:  GitHub Pull Request Action
-          uses: repo-sync/pull-request@v2.0.1
-          with:
-            # Branch name to pull from, default is triggered branch
-            source_branch: dev # optional
-            # Branch name to sync to in this repo, default is master
-            destination_branch:  master # optional, default is master
-            # Pull request title
-            pr_title: nuevo pull request # optional
-            # Pull request body
-            #pr_body: nuevo pulll request # optional
-            # Pull request reviewers, comma-separated list (no spaces)
-            #pr_reviewer: # optional
-            # Pull request assignees, comma-separated list (no spaces)
-            #pr_assignee: # optional
-            # Pull request labels, comma-separated list (no spaces)
-            #pr_label: # optional
-            # Pull request milestone
-            #pr_milestone: # optional
-            # GitHub token secret
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+        uses: repo-sync/pull-request@v2.0.1
+        with:
+          # Branch name to pull from, default is triggered branch
+          source_branch: dev # optional
+          # Branch name to sync to in this repo, default is master
+          destination_branch:  master # optional, default is master
+          # Pull request title
+          pr_title: nuevo pull request # optional
+          # Pull request body
+          #pr_body: nuevo pulll request # optional
+          # Pull request reviewers, comma-separated list (no spaces)
+          #pr_reviewer: # optional
+          # Pull request assignees, comma-separated list (no spaces)
+          #pr_assignee: # optional
+          # Pull request labels, comma-separated list (no spaces)
+          #pr_label: # optional
+          # Pull request milestone
+          #pr_milestone: # optional
+          # GitHub token secret
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -28,9 +28,9 @@ jobs:
           # MYSQL_DATABASE - name for the default database that is created
           mysql database: accounts # optional, default is
           # MYSQL_USER - create the specified user with superuser power for created database
-          mysql user:  manager # optional, default is
+          mysql user:  root # optional, default is
           # MYSQL_PASSWORD - specified superuser password which user is power for created database
-          mysql password: manager # optional, default is
+          mysql password: root # optional, default is
       #- name: Validate composer.json and composer.lock
       # run: composer validate
       - name: Install dependencies

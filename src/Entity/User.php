@@ -111,9 +111,15 @@ class User implements UserInterface
      */
     private $phone;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Role", inversedBy="users")
+     */
+    private $realRoles;
+
     public function __construct()
     {
         $this->groups = new ArrayCollection();
+        $this->realRoles = new ArrayCollection();
     }
 
 
@@ -147,11 +153,20 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
+    # When user is authenticate the system security of symfony return user getRoles and this roles
+    # The roles should be the union between realRoles (relation with roles) and roles by groups
     public function getRoles(): array
     {
         $roles = $this->roles;
         $groups = $this->getGroups();
+        $realRoles = $this->getRealRoles();
+
+        $realRolesName = array();
         $finalRoles = array();
+
+        foreach ($realRoles as $realRole) {
+            array_push($realRolesName, $realRole->getName());
+        }
 
         foreach ($groups as $group) {
             $groupRoles = $group->getRoles();
@@ -159,7 +174,7 @@ class User implements UserInterface
                 array_push($finalRoles, $role->getName());
             }
         }
-        $unifiedRoles = array_unique(array_merge($roles, $finalRoles));
+        $unifiedRoles = array_unique(array_merge($roles, $finalRoles, $realRolesName));
         $result = array();
         foreach ($unifiedRoles as $key => $name) {
             array_push($result, $name);
@@ -174,10 +189,12 @@ class User implements UserInterface
         return $this->roles;
     }
 
-
+    # Always pass empty array because the roles of user would be extract between realRoles relation ang Groups
+    # The problem is that symfony in version 4 required that roles field is array string and we need relation to add,
+    # edit and remove roles dinacally
     public function setRoles(array $roles): self
     {
-        $this->roles = $roles;
+        $this->roles = [];//$roles;
 
         return $this;
     }
@@ -260,6 +277,32 @@ class User implements UserInterface
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Role[]
+     */
+    public function getRealRoles(): Collection
+    {
+        return $this->realRoles;
+    }
+
+    public function addRealRole(Role $realRole): self
+    {
+        if (!$this->realRoles->contains($realRole)) {
+            $this->realRoles[] = $realRole;
+        }
+
+        return $this;
+    }
+
+    public function removeRealRole(Role $realRole): self
+    {
+        if ($this->realRoles->contains($realRole)) {
+            $this->realRoles->removeElement($realRole);
+        }
 
         return $this;
     }

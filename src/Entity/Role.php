@@ -77,12 +77,18 @@ class Role
      */
     private $permissions;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="realRoles")
+     */
+    private $users;
+
 
     public function __construct()
     {
         $this->applications = new ArrayCollection();
         $this->groups = new ArrayCollection();
         $this->permissions = new ArrayCollection();
+        $this->users = new ArrayCollection();
 
     }
 
@@ -209,6 +215,34 @@ class Role
             if ($permission->getRole() === $this) {
                 $permission->setRole(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addRealRole($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeRealRole($this);
         }
 
         return $this;

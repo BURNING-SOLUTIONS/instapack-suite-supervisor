@@ -50,10 +50,10 @@ class RegistrationController
 
         $isValid = $this->userService->isValidUser($data);
         if ($isValid) {
-            $arrRolesName = $this->userService->denormalizeRoles($data->getSingelRoles());
+            //$arrRolesName = $this->userService->denormalizeRoles($data->getSingelRoles());
             $password = $data->getPassword();
             $encodedPassword = $this->encoder->encodePassword($data, $password);
-            $data->setRoles($arrRolesName);
+            //$data->setRoles($arrRolesName);
             $data->setPassword($encodedPassword);
         }
 

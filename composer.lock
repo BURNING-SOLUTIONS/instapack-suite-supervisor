@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/api-pack.git",
-                "reference": "41364f8763475d7709c43f790aa77a4157d038e2"
+                "reference": "41364f8763475d770redis-bundle9c43f790aa77a4157d038e2"
             },
             "dist": {
                 "type": "zip",

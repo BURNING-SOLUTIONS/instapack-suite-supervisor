@@ -55,47 +55,49 @@ class PasswordResetController
     {
         $message = '';
         $API_BASE_URL = $_ENV['API_BASE_URL'];
+        $SEND_EMAIL_USER = $_ENV['API_EMAIL_USER'];
         $encoder = new JsonEncode();
         $decoder = new JsonDecode();
         $encrypter = new EncryptService();
         $parser = new RequestContextParser($this->request);
         $operation = $this->request->getCurrentRequest()->attributes->get('operation');
         $now = new \DateTime('now');
+        $userEmail = $data->getEmail();
         $urlExpiration = $now->add(new \DateInterval('PT8H'));
 
         if ($operation === 'request') {
-            if (!$data->getEmail()) {
+            if (!$userEmail) {
                 throw new ValidatorParamNotFoundException('email');
             }
 
             try {
-                $this->userService->getUserByParams(array('email' => $data->getEmail()), 'findOneBy');
+                $this->userService->getUserByParams(array('email' => $userEmail), 'findOneBy');
             } catch (NotFoundHttpException $exception) {
                 return new JsonResponse(array('message' => $exception->getMessage()));
             }
 
-            $tokenParam = $encrypter->encrypt($encoder->encode(array('email' => $data->getEmail(), 'tokenExpiration' => $urlExpiration->format('Y-m-d H:i:s')), 'json'));
-
+            $tokenData = array('email' => $userEmail, 'tokenExpiration' => $urlExpiration->format('Y-m-d H:i:s'));
+            $tokenParam = $encrypter->encrypt($encoder->encode($tokenData, 'json'));
             $template =
                 '<h3>Solicitud cambio de contraseña:</h3> 
                     <p>
                         Estimado usuario, haga click en el siguiente enlace para recuperar su contraseña --- 
-                            <a href="' . $API_BASE_URL . '/#/password-recovery?tkd_reset=' . $tokenParam . '">
-                                recuperar clave
-                            </a> 
-                        (tenga en cuenta que este enlace será válido solo por 8 horas.)
+                            <a href="' . $API_BASE_URL . '/#/password-recovery?tkd_reset=' . $tokenParam . '"> recuperar clave </a> 
+                            (tenga en cuenta que este enlace será válido solo por 8 horas.)
                     </p>';
 
-            $email =
-                (new Email())
-                    ->from('hola@instapack.es')
-                    ->to($data->getEmail())
-                    ->subject('Recuperación de clave de acceso')
-                    ->text('Estimado cliente:')
-                    ->html($template);
-
-            $this->mailerManger->getCurrentEmailSender()->sendEmail($email);
-            $message = 'Tienes un nuevo ' . $data->getEmail() . ', por favor revise su bandeja de entrada';
+            $this
+                ->mailerManger
+                ->getCurrentEmailSender()
+                ->sendEmail(
+                    (new Email())
+                        ->from($SEND_EMAIL_USER)
+                        ->to($userEmail)
+                        ->subject('Recuperación de clave de acceso')
+                        ->text('Estimado cliente:')
+                        ->html($template)
+                );
+            $message = 'Tienes un nuevo mensaje en tu correo electrónico' . $userEmail . ', por favor revise su bandeja de entrada';
         } else {
             $resetToken = str_replace(' ', '+', $parser->getRequestValue('tkd_reset'));
             $newPassword = $parser->getRequestValue('password');

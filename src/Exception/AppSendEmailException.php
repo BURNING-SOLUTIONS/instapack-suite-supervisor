@@ -1,13 +1,12 @@
 <?php
-// api/src/Exception/ProductNotFoundException.php
+
 
 namespace App\Exception;
 
 use Throwable;
 
-final class AppEntityValidationException extends \Exception
+final class AppSendEmailException extends \Exception
 {
-
     /**
      * ApplicationIdNotFoundException constructor.
      * @param string $message
@@ -26,4 +25,5 @@ final class AppEntityValidationException extends \Exception
     {
         return $this->message;
     }
+
 }
